@@ -1,12 +1,18 @@
+from abc import ABC, abstractmethod
+
 class BaseModel:
+    @abstractmethod
     def load_model(self):
         pass
 
-    def preprocess(self, input_data):
+    @abstractmethod
+    def load_data(self):
         pass
 
-    def prdeict(self, input_data):
+    @abstractmethod
+    def train(self, input_data):
         pass
 
-    def postprocess(self, output_data):
+    @abstractmethod
+    def evaluate(self, output_data):
         pass
