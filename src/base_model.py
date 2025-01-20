@@ -5,6 +5,19 @@ class BaseModel:
     pretrained = False
     model = None
 
+    @abstractmethod
+    def process_input(self, image_source):
+        pass
+
+    @abstractmethod
+    def do_train(self, inputs):
+        pass
+
+    @abstractmethod
+    def get_eval(self, metric):
+        pass
+
+
     # @abstractmethod
     # def load_model(self):
     #     pass

@@ -9,10 +9,11 @@ class DINOV2(BaseModel):
         self.model_name = model_name
         self.pretrained = pretrained
 
-    def process_image(self, image_source):
+    def process_image(self, image_url):
+        # image_url로부터 불러온 사진을 AutoImageProcessor가 전처리해서 모델에 적합한 input 형태로 변환함.
         if self.pretrained:
             try:
-                image = Image.open(requests.get(image_source, stream=True).raw)
+                image = Image.open(requests.get(image_url, stream=True).raw)
             except Exception as e:
                 print("Error: Failed to process the image. Please try again.")
                 exit(0)
@@ -58,8 +59,3 @@ if __name__ == "__main__":
     traced_result = model.trace_model(inputs)
     if traced_result:
         print(f"successfully used pretrained {model.model_name}.\ntraced_result: {traced_result}")
-
-    # 사전 훈련된 모델 사용하기 (Offline)
-
-
-
