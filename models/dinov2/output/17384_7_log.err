@@ -1,0 +1,39 @@
+/home/baesik/24Winter_OOP_AI_Agent/models/dinov2/dinov2/layers/swiglu_ffn.py:43: UserWarning: xFormers is available (SwiGLU)
+  warnings.warn("xFormers is available (SwiGLU)")
+/home/baesik/24Winter_OOP_AI_Agent/models/dinov2/dinov2/layers/attention.py:27: UserWarning: xFormers is available (Attention)
+  warnings.warn("xFormers is available (Attention)")
+/home/baesik/24Winter_OOP_AI_Agent/models/dinov2/dinov2/layers/block.py:33: UserWarning: xFormers is available (Block)
+  warnings.warn("xFormers is available (Block)")
+submitit ERROR (2025-01-20 16:43:39,515) - Submitted job triggered an exception
+Traceback (most recent call last):
+  File "/home/baesik/anaconda3/envs/dinov2/lib/python3.9/runpy.py", line 197, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/home/baesik/anaconda3/envs/dinov2/lib/python3.9/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/home/baesik/anaconda3/envs/dinov2/lib/python3.9/site-packages/submitit/core/_submit.py", line 11, in <module>
+    submitit_main()
+  File "/home/baesik/anaconda3/envs/dinov2/lib/python3.9/site-packages/submitit/core/submission.py", line 76, in submitit_main
+    process_job(args.folder)
+  File "/home/baesik/anaconda3/envs/dinov2/lib/python3.9/site-packages/submitit/core/submission.py", line 69, in process_job
+    raise error
+  File "/home/baesik/anaconda3/envs/dinov2/lib/python3.9/site-packages/submitit/core/submission.py", line 55, in process_job
+    result = delayed.result()
+  File "/home/baesik/anaconda3/envs/dinov2/lib/python3.9/site-packages/submitit/core/utils.py", line 137, in result
+    self._result = self.function(*self.args, **self.kwargs)
+  File "/home/baesik/24Winter_OOP_AI_Agent/models/dinov2/dinov2/run/train/train.py", line 26, in __call__
+    train_main(self.args)
+  File "/home/baesik/24Winter_OOP_AI_Agent/models/dinov2/dinov2/train/train.py", line 314, in main
+    do_train(cfg, model, resume=not args.no_resume)
+  File "/home/baesik/24Winter_OOP_AI_Agent/models/dinov2/dinov2/train/train.py", line 194, in do_train
+    dataset = make_dataset(
+  File "/home/baesik/24Winter_OOP_AI_Agent/models/dinov2/dinov2/data/loaders.py", line 89, in make_dataset
+    logger.info(f"# of dataset samples: {len(dataset):,d}")
+  File "/home/baesik/24Winter_OOP_AI_Agent/models/dinov2/dinov2/data/datasets/image_net.py", line 167, in __len__
+    entries = self._get_entries()
+  File "/home/baesik/24Winter_OOP_AI_Agent/models/dinov2/dinov2/data/datasets/image_net.py", line 107, in _get_entries
+    self._entries = self._load_extra(self._entries_path)
+  File "/home/baesik/24Winter_OOP_AI_Agent/models/dinov2/dinov2/data/datasets/image_net.py", line 86, in _load_extra
+    return np.load(extra_full_path, mmap_mode="r")
+  File "/home/baesik/anaconda3/envs/dinov2/lib/python3.9/site-packages/numpy/lib/npyio.py", line 427, in load
+    fid = stack.enter_context(open(os_fspath(file), "rb"))
+FileNotFoundError: [Errno 2] No such file or directory: '<PATH/TO/DATASET>/entries-TRAIN.npy'

@@ -1,18 +1,25 @@
 from abc import ABC, abstractmethod
 
 class BaseModel:
-    @abstractmethod
-    def load_model(self):
-        pass
+    model_name = None
+    pretrained = False
 
     @abstractmethod
-    def load_data(self):
-        pass
+    def set_pretrained(self, pretrained: bool):  
+        pass      
 
-    @abstractmethod
-    def train(self, input_data):
-        pass
+    # @abstractmethod
+    # def load_model(self):
+    #     pass
 
-    @abstractmethod
-    def evaluate(self, output_data):
-        pass
+    # @abstractmethod
+    # def load_data(self):
+    #     pass
+
+    # @abstractmethod
+    # def train(self, input_data):
+    #     pass
+
+    # @abstractmethod
+    # def evaluate(self, output_data):
+    #     pass

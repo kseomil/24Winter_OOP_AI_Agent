@@ -1,0 +1,2 @@
+submitit INFO (2025-01-20 16:44:17,723) - Starting with JobEnvironment(job_id=18513, hostname=BSS, local_rank=3(8), node=0(1), global_rank=3(8))
+submitit INFO (2025-01-20 16:44:17,723) - Loading pickle: /home/baesik/24Winter_OOP_AI_Agent/models/dinov2/output/18513_submitted.pkl

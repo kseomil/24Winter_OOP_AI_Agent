@@ -7,14 +7,14 @@ channels:
   - conda-forge
 dependencies:
   - python=3.9
-  - pytorch::pytorch=2.0.0
+  - pytorch::pytorch
   - pytorch::pytorch-cuda=11.7.0
   - pytorch::torchvision=0.15.0
   - omegaconf
   - torchmetrics=0.10.3
   - fvcore
   - iopath
-  - xformers::xformers=0.0.18
+  - xformers::xformers
   - pip
   - pip:
     - git+https://github.com/facebookincubator/submitit
