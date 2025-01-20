@@ -3,10 +3,7 @@ from abc import ABC, abstractmethod
 class BaseModel:
     model_name = None
     pretrained = False
-
-    @abstractmethod
-    def set_pretrained(self, pretrained: bool):  
-        pass      
+    model = None
 
     # @abstractmethod
     # def load_model(self):
