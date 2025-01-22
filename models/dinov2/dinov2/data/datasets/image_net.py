@@ -176,6 +176,7 @@ class ImageNet(ExtendedVisionDataset):
             with open(labels_full_path, "r") as f:
                 reader = csv.reader(f)
                 for row in reader:
+                    print("row:", row)
                     class_id, class_name = row
                     labels.append((class_id, class_name))
         except OSError as e:

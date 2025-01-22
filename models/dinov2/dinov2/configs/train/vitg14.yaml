@@ -6,8 +6,7 @@ ibot:
   head_n_prototypes: 131072
 train:
   batch_size_per_gpu: 12
-  dataset_path: ImageNet22k
-  centering: sinkhorn_knopp
+  dataset_path: ImageNet:split=VAL:root=/home/baesik/24Winter_OOP_AI_Agent/models/dinov2/dinov2/data/datasets:extra=/home/baesik/24Winter_OOP_AI_Agent/models/dinov2/dinov2/data/datasets
 student:
   arch: vit_giant2
   patch_size: 14
