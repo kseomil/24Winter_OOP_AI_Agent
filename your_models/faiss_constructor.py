@@ -3,7 +3,11 @@ import faiss
 import numpy as np
 from PIL import Image
 import csv
+import os
 from dinov2_class import preprocess_input_data, DINOV2
+
+
+script_path = os.path.dirname(os.path.realpath(__file__))
 
 
 class FaissConstructor:
@@ -31,7 +35,7 @@ class FaissConstructor:
             with torch.no_grad():
                 preprocessed_image = preprocess_input_data(image_path)
                 features = self.model.compute_embeddings(preprocessed_image)
-            self.add_vector_to_index(embedding=features)
+            self.add_vector_to_index(embeddings=features)
 
 
     def write_index(self, vector_index):
@@ -52,15 +56,18 @@ class FaissConstructor:
         # 결과 테스트
         print("distance: ", distances[0][0], " indices: ", indices[0][0])
         return
-        
-
+    
 
 if __name__ == "__main__":
     IMAGE_PATH = ['/home/baesik/24Winter_OOP_AI_Agent/data/cat10.jpg']
+
     dinov2 = DINOV2()
     dinov2.load_model('vits14')
+
     fc = FaissConstructor(dinov2)
     fc.extract_embeddings(IMAGE_PATH)
     fc.write_index("vector.index")
 
-    fc.search_k_similar_images("/home/baesik/24Winter_OOP_AI_Agent/vector.index", IMAGE_PATH)
+    index_file_path = os.path.join(script_path, "../vector.index")
+
+    fc.search_k_similar_images(index_file_path, IMAGE_PATH)

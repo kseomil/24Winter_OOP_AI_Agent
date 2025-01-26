@@ -8,6 +8,9 @@ import numpy as np
 from dinov2.models.vision_transformer import vit_base, vit_small, vit_large, vit_giant2, DinoVisionTransformer
 
 
+script_path = os.path.dirname(os.path.realpath(__file__))
+
+
 class DINOV2(BaseModel):
     def __init__(self):
         # torch가 사용할 device 설정
@@ -55,7 +58,10 @@ class DINOV2(BaseModel):
             if use_register:
                 checkpoint_file_name = f"dinov2_{self.model_name}_reg4_pretrain.pth"
             checkpoint_file_name = f"dinov2_{self.model_name}_pretrain.pth"
-            checkpoint = torch.load(os.path.join("/home/baesik/24Winter_OOP_AI_Agent/checkpoints/dinov2/backbones", checkpoint_file_name))
+
+            checkpoint_file_path = os.path.join(script_path, f"../checkpoints/dinov2/backbones/{checkpoint_file_name}")
+            print(checkpoint_file_path)
+            checkpoint = torch.load(checkpoint_file_path)
 
             self.model.load_state_dict(checkpoint)
             self.model.to(self.device)
