@@ -1,3 +1,0 @@
-'''
-Models and Data Loader
-'''
