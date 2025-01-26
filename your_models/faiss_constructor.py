@@ -13,14 +13,10 @@ class FaissConstructor:
 
 
     def add_vector_to_index(self, embedding):
-        #convert embedding to numpy
-        vector = embedding.detach().cpu().numpy()
+        # Convert to float32 numpy
+        vector = np.float32(embedding)
 
-        print("vector: ", vector)
-        #Convert to float32 numpy
-        vector = np.float32(vector)
-
-        #Normalize vector: important to avoid wrong results when searching
+        # Normalize vector: important to avoid wrong results when searching
         faiss.normalize_L2(vector)
 
         #Add to index
@@ -29,16 +25,29 @@ class FaissConstructor:
 
     def extract_embeddings(self, images):
         for image_path in images:
-            image = Image.open(image_path).convert('RGB')
             with torch.no_grad():
-                inputs = preprocess_input_data(image_path)
-                features = self.model.compute_embeddings(inputs)
-                print(features[0].mean())
-            self.add_vector_to_index(embedding=features.mean(dim=1))
+                preprocessed_image = preprocess_input_data(image_path)
+                features = self.model.compute_embeddings(preprocessed_image)
+            self.add_vector_to_index(embedding=features)
+
 
     def write_index(self, vector_index):
         faiss.write_index(self.index, vector_index)
+        print(f"Successfully created {vector_index}")
 
+
+    def search_k_similar_images(self, vector_index, input_image, k=1):
+        index = faiss.read_index(vector_index)
+
+        # OpenClip에서 추출된 이미지를 dinov2 모델에 입력 가능한 형태로 변환하여 임베딩 계산
+        input_image_embeddings = self.model.compute_embeddings(preprocess_input_data(input_image[0]))
+
+        # FAISS 검색 수행
+        distances, indices = index.search(input_image_embeddings, k)
+
+        print(distances, indices)
+        return
+        
 
 
 if __name__ == "__main__":
@@ -48,3 +57,5 @@ if __name__ == "__main__":
     IMAGE_PATH = ['/home/baesik/24Winter_OOP_AI_Agent/data/cat10.jpg']
     fc.extract_embeddings(IMAGE_PATH)
     fc.write_index("vector.index")
+
+    fc.search_k_similar_images("/home/baesik/24Winter_OOP_AI_Agent/vector.index", IMAGE_PATH)

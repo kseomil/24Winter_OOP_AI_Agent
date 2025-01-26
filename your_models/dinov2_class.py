@@ -65,26 +65,17 @@ class DINOV2(BaseModel):
             print(f"Failed to load the model due to a runtime error: {e}")
             exit(-1)
 
+        self.model.eval()
+
 
     def compute_embeddings(self, image) -> dict:
-        embeddings = self.model(image.to(self.device))
-        print(np.array(embeddings[0].detach().cpu().numpy()).reshape(1, -1).tolist())
+        temp = self.model(image.to(self.device))
+        embeddings = np.array(temp[0].detach().cpu().numpy()).reshape(1, -1)
         return embeddings
-        
-
-      # def classify_image(self, inputs):
-    #     # AutoModelForImageClassification을 사용하여 모델을 불러옴
-    #     self.model = AutoModelForImageClassification.from_pretrained(self.model_name)
-
-    #     # 모델을 통해 예측을 수행
-    #     outputs = self.model(**inputs)
-    #     logits = outputs.logits  # logits는 모델의 최종 출력 (분류 점수)
-    #     return logits
-    
 
 
 def _load_data(data_path) -> torch.Tensor:
-    image = Image.open(data_path)
+    image = Image.open(data_path).convert('RGB')
     return image
 
     
@@ -107,15 +98,3 @@ if __name__ == "__main__":
 
     image = preprocess_input_data(IMAGE_PATH)
     embedding_results = dinov2.compute_embeddings(image)
-    # print(embedding_results)
-
-    # for k, v in embeddings.items():
-    #     print(k, v)
-
-
-    # inputs = dinov2.process_input(image_url=IMAGE_URL)
-    # # logits = dinov2.classify_image(inputs)
-    # print(f"logits: {logits}\n")
-    # traced_result = dinov2.trace_model(inputs)
-    # if traced_result:
-    #     print(f"successfully used pretrained {dinov2.model_name}.\ntraced_result: {traced_result}")
