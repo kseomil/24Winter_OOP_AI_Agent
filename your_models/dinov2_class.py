@@ -4,6 +4,7 @@ from PIL import Image
 import os
 import torchvision.transforms as T
 import numpy as np
+from typing import List
 
 from dinov2.models.vision_transformer import vit_base, vit_small, vit_large, vit_giant2, DinoVisionTransformer
 
@@ -79,33 +80,58 @@ class DINOV2(BaseModel):
         self.model.eval()
 
 
-    def compute_embeddings(self, image) -> dict:
-        temp = self.model(image.to(self.device))
-        embeddings = np.array(temp[0].detach().cpu().numpy()).reshape(1, -1)
-        return embeddings
+    def compute_embeddings(self, images) -> List[dict]:
+        all_embeddings = []
+        with torch.no_grad():
+            for image in images:
+                image_embedding = self.model(image.to(self.device))
+                embeddings = np.array(image_embedding[0].detach().cpu().numpy()).reshape(1, -1)
+                all_embeddings.append(embeddings)
+
+        return all_embeddings
 
 
-def _load_data(data_path) -> torch.Tensor:
-    image = Image.open(data_path).convert('RGB')
-    return image
+def _load_data(image_path) -> List[Image.Image]:
+    all_images = []
+
+    image_dir = os.fsencode(image_path)
+
+    # 테스트를 위해서 10개의 이미지만 로드함. 추후 변경
+    for file in os.listdir(image_dir)[:10]:
+        filename = os.fsdecode(file)
+        if filename.endswith(".jpg") or filename.endswith(".JPEG"): 
+            image = Image.open(os.path.join(image_path, filename))
+            all_images.append(image)
+        else:
+            continue
+
+    return all_images
 
     
 # dinov2 모델에 호환되는 input 형태로 이미지 가공
-def preprocess_input_data(image_source):
+def preprocess_input_data(image_path):
+    all_transfomred_images = []
+
     # 이미지 데이터 로드
-    image = _load_data(image_source)
+    all_images = _load_data(image_path)
 
     # torchvision.transforms 모듈의 Compose 객체
     transform_image = T.Compose([T.ToTensor(), T.Resize(244), T.CenterCrop(224), T.Normalize([0.5], [0.5])])
-    return transform_image(image)[:3].unsqueeze(0)
 
+    for image in all_images:
+        transformed_image = transform_image(image)[:3].unsqueeze(0)
+        all_transfomred_images.append(transformed_image)
+
+    return all_transfomred_images
 
 if __name__ == "__main__":
     # 사전 훈련된 모델 사용하기 (Local)
-    IMAGE_URL = 'http://images.cocodataset.org/val2017/000000039769.jpg'
-    IMAGE_PATH = '/home/baesik/24Winter_OOP_AI_Agent/data/cat10.jpg'
+    IMAGE_PATH = os.path.join(script_path, "../data/flickr30k/Images")
     dinov2 = DINOV2()
     dinov2.load_model('vits14')
-    image = preprocess_input_data(IMAGE_PATH)
-    embedding_results = dinov2.compute_embeddings(image)
+    images = preprocess_input_data(IMAGE_PATH)
+    # for i in images:
+    #     print(i.shape)
+    embedding_results = dinov2.compute_embeddings(images)
+    print(embedding_results[0].shape)
     print(embedding_results)
