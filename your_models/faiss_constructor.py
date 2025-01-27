@@ -4,7 +4,7 @@ import numpy as np
 from PIL import Image
 import csv
 import os
-from dinov2_class import preprocess_input_data, DINOV2
+from your_models.dinov2_class import DINOV2
 
 
 script_path = os.path.dirname(os.path.realpath(__file__))
@@ -37,26 +37,26 @@ class FaissConstructor:
         index = faiss.read_index(vector_index)
 
         # OpenClip에서 추출된 이미지를 dinov2 모델에 입력 가능한 형태로 변환하여 임베딩 계산
-        input_image_embeddings = self.model.compute_embeddings(preprocess_input_data(input_image))[0]
-        print(input_image_embeddings)
+        preprocessed_image = self.model.preprocess_input_data(input_image)
+        input_image_embeddings = self.model.compute_embeddings(preprocessed_image)[0]
 
         # FAISS 검색 수행
         distances, indices = index.search(input_image_embeddings, k)
 
         # 결과 출력
-        print("in FaissConstructor.search_k_similar_images: ")
-        print("distance: ", distances[0][0], " indices: ", indices[0][0])
+        # print("in FaissConstructor.search_k_similar_images: ")
+        # print("distance: ", distances[0][0], " indices: ", indices[0][0])
 
         return indices
     
 
 if __name__ == "__main__":
-    IMAGE_PATH = IMAGE_PATH = os.path.join(script_path, "../data/flickr30k/Images")
-    INEDEX_PATH = os.path.join(script_path, "../vector.index")
+    IMAGE_PATH = os.path.join(script_path, "../data/flickr30k/Images")
+    INEDEX_PATH = os.path.join(script_path, "../dinov2.index")
 
     dinov2 = DINOV2()
     dinov2.load_model('vits14')
-    images = preprocess_input_data(IMAGE_PATH)
+    images = dinov2.preprocess_input_data(IMAGE_PATH)
     embedding_results = dinov2.compute_embeddings(images)
 
     fc = FaissConstructor(dinov2)

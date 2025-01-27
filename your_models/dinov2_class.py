@@ -91,45 +91,45 @@ class DINOV2(BaseModel):
         return all_embeddings
 
 
-def _load_data(image_path) -> List[Image.Image]:
-    all_images = []
+    def _load_data(self, image_path) -> List[Image.Image]:
+        all_images = []
 
-    image_dir = os.fsencode(image_path)
+        image_dir = os.fsencode(image_path)
 
-    # 테스트를 위해서 10개의 이미지만 로드함. 추후 변경
-    for file in os.listdir(image_dir)[:10]:
-        filename = os.fsdecode(file)
-        if filename.endswith(".jpg") or filename.endswith(".JPEG"): 
-            image = Image.open(os.path.join(image_path, filename))
-            all_images.append(image)
-        else:
-            continue
+        # 테스트를 위해서 10개의 이미지만 로드함. 추후 변경
+        for file in os.listdir(image_dir)[:10]:
+            filename = os.fsdecode(file)
+            if filename.endswith(".jpg") or filename.endswith(".JPEG"): 
+                image = Image.open(os.path.join(image_path, filename))
+                all_images.append(image)
+            else:
+                continue
 
-    return all_images
+        return all_images
 
-    
-# dinov2 모델에 호환되는 input 형태로 이미지 가공
-def preprocess_input_data(image_path):
-    all_transfomred_images = []
+        
+    # dinov2 모델에 호환되는 input 형태로 이미지 가공
+    def preprocess_input_data(self, image_path):
+        all_transfomred_images = []
 
-    # 이미지 데이터 로드
-    all_images = _load_data(image_path)
+        # 이미지 데이터 로드
+        all_images = self._load_data(image_path)
 
-    # torchvision.transforms 모듈의 Compose 객체
-    transform_image = T.Compose([T.ToTensor(), T.Resize(244), T.CenterCrop(224), T.Normalize([0.5], [0.5])])
+        # torchvision.transforms 모듈의 Compose 객체
+        transform_image = T.Compose([T.ToTensor(), T.Resize(244, antialias=True), T.CenterCrop(224), T.Normalize([0.5], [0.5])])
 
-    for image in all_images:
-        transformed_image = transform_image(image)[:3].unsqueeze(0)
-        all_transfomred_images.append(transformed_image)
+        for image in all_images:
+            transformed_image = transform_image(image)[:3].unsqueeze(0)
+            all_transfomred_images.append(transformed_image)
 
-    return all_transfomred_images
+        return all_transfomred_images
 
 if __name__ == "__main__":
     # 사전 훈련된 모델 사용하기 (Local)
     IMAGE_PATH = os.path.join(script_path, "../data/flickr30k/Images")
     dinov2 = DINOV2()
     dinov2.load_model('vits14')
-    images = preprocess_input_data(IMAGE_PATH)
+    images = dinov2.preprocess_input_data(IMAGE_PATH)
     # for i in images:
     #     print(i.shape)
     embedding_results = dinov2.compute_embeddings(images)
