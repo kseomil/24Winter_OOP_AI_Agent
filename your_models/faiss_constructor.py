@@ -61,7 +61,7 @@ if __name__ == "__main__":
 
     fc = FaissConstructor(dinov2)
     fc.add_vector_to_index(embedding_results)
-    fc.write_index("vector.index")
+    fc.write_index("dinov2.index")
 
     target = os.path.join(script_path, "../data/val/")
 
