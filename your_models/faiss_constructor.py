@@ -16,26 +16,15 @@ class FaissConstructor:
         self.index = faiss.IndexFlatL2(384)
 
 
-    def add_vector_to_index(self, embeddings):
+    def add_vector_to_index(self, all_embeddings: list):
         """
             embeddings vector를 정규화해서 self.index에 추가함.
         """
-        # Convert to float32 numpy
-        vector = np.float32(embeddings)
-
-        # Normalize vector: important to avoid wrong results when searching
-        faiss.normalize_L2(vector)
-
-        #Add to index
-        self.index.add(vector)
-
-
-    def extract_embeddings(self, images: list):
-        for image_path in images:
-            with torch.no_grad():
-                preprocessed_image = preprocess_input_data(image_path)
-                features = self.model.compute_embeddings(preprocessed_image)
-            self.add_vector_to_index(embeddings=features)
+        for embeddings in all_embeddings:
+            embeddings = np.float32(embeddings)
+            faiss.normalize_L2(embeddings)
+            #Add to index
+            self.index.add(embeddings)
 
 
     def write_index(self, vector_index):
@@ -48,26 +37,33 @@ class FaissConstructor:
         index = faiss.read_index(vector_index)
 
         # OpenClip에서 추출된 이미지를 dinov2 모델에 입력 가능한 형태로 변환하여 임베딩 계산
-        input_image_embeddings = self.model.compute_embeddings(preprocess_input_data(input_image[0]))
+        input_image_embeddings = self.model.compute_embeddings(preprocess_input_data(input_image))[0]
+        print(input_image_embeddings)
 
         # FAISS 검색 수행
         distances, indices = index.search(input_image_embeddings, k)
 
-        # 결과 테스트
+        # 결과 출력
+        print("in FaissConstructor.search_k_similar_images: ")
         print("distance: ", distances[0][0], " indices: ", indices[0][0])
-        return
+
+        return indices
     
 
 if __name__ == "__main__":
-    IMAGE_PATH = ['/home/baesik/24Winter_OOP_AI_Agent/data/cat10.jpg']
+    IMAGE_PATH = IMAGE_PATH = os.path.join(script_path, "../data/flickr30k/Images")
+    INEDEX_PATH = os.path.join(script_path, "../vector.index")
 
     dinov2 = DINOV2()
     dinov2.load_model('vits14')
+    images = preprocess_input_data(IMAGE_PATH)
+    embedding_results = dinov2.compute_embeddings(images)
 
     fc = FaissConstructor(dinov2)
-    fc.extract_embeddings(IMAGE_PATH)
+    fc.add_vector_to_index(embedding_results)
     fc.write_index("vector.index")
 
-    index_file_path = os.path.join(script_path, "../vector.index")
+    target = os.path.join(script_path, "../data/val/")
 
-    fc.search_k_similar_images(index_file_path, IMAGE_PATH)
+    image_index = fc.search_k_similar_images(INEDEX_PATH, input_image=target)
+    print(image_index[0][0])
